@@ -916,21 +916,90 @@
 
         /* Responsive design */
         @media (max-width: 768px) {
+            .app-container {padding: 10px;}
+            h1 {font-size: 2rem; margin-bottom: 20px;}
             .board { gap: 8px; }
             .die { width: 60px; height: 60px; }
             .braille-cell { width: 35px; height: 55px; }
-            .game-info { flex-direction: column; align-items: center; gap: 10px; border-radius: 15px; }
+            .game-info { flex-direction: column; align-items: center; gap: 10px; border-radius: 15px; padding: 10px; }
             .accessibility-controls { flex-direction: column; padding: 15px; }
             .toggle-control, .volume-control { width: 100%; justify-content: space-between; }
+            .drawer-toggle {bottom: 15px; right: 15px; width: 50px; height: 50px;}
         }
 
         @media (max-width: 576px) {
-            .die { width: 50px; height: 50px; }
-            .braille-cell { width: 30px; height: 45px; }
+            .board { 
+                grid-template-columns: repeat(5, 1fr);
+                gap: 6px;
+                max-width: 100%;
+                margin-bottom: 15px;
+            }
+            .die { 
+                width: calc(18vw - 10px);
+                height: calc(18vw - 10px); 
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .braille-cell { 
+                width: calc(12vw); 
+                height: calc(16vw);
+                min-width: 24px;
+                min-height: 36px; 
+            }
             .braille-dot { width: 8px; height: 8px; }
-            .word-input { flex-direction: column; }
-            #submit-btn { width: 100%; }
+            .word-input { flex-direction: column; gap: 8px; }
+            #current-word { padding: 10px; font-size: 16px; }
+            #submit-btn, #clear-btn, #reroll-btn, #new-game-btn { 
+                width: 100%; 
+                padding: 10px;
+                font-size: 14px;
+            }
             .print-letter { font-size: 12px; right: 2px; top: 1px; width: 14px; height: 14px; line-height: 14px; }
+            .game-container {padding: 15px 10px;}
+            .controls {gap: 8px;}
+            
+            .modal-content {
+                padding: 20px 15px;
+                width: 95%;
+            }
+            
+            .modal h2 {font-size: 24px;}
+            .modal p {font-size: 16px;}
+            #final-score, #words-found {font-size: 22px;}
+            
+            .timer, .score, .rerolls {font-size: 16px;}
+            
+            /* Adjust Braille dot positions for smaller screens */
+            .braille-dot:nth-child(1) { top: 4px; left: 4px; }
+            .braille-dot:nth-child(2) { top: 18px; left: 4px; }
+            .braille-dot:nth-child(3) { top: 32px; left: 4px; }
+            .braille-dot:nth-child(4) { top: 4px; left: 18px; }
+            .braille-dot:nth-child(5) { top: 18px; left: 18px; }
+            .braille-dot:nth-child(6) { top: 32px; left: 18px; }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            h1 {font-size: 1.7rem;}
+            .die {
+                width: calc(19vw - 10px);
+                height: calc(19vw - 10px);
+                min-width: 35px;
+                min-height: 35px;
+            }
+            .braille-cell {
+                width: calc(13vw);
+                height: calc(17vw);
+            }
+            .braille-dot {width: 6px; height: 6px;}
+            
+            /* Tighter Braille dot layout */
+            .braille-dot:nth-child(1) { top: 3px; left: 3px; }
+            .braille-dot:nth-child(2) { top: 15px; left: 3px; }
+            .braille-dot:nth-child(3) { top: 27px; left: 3px; }
+            .braille-dot:nth-child(4) { top: 3px; left: 15px; }
+            .braille-dot:nth-child(5) { top: 15px; left: 15px; }
+            .braille-dot:nth-child(6) { top: 27px; left: 15px; }
         }
 
         @keyframes popIn {
@@ -1735,75 +1804,6 @@
                     },
                     'gameOver': () => {
                         oscillator.type = 'triangle';
-                        
-                        // Fanfare - softer and shorter
-                        [523.25, 659.25, 783.99].forEach((freq, i) => { // Removed highest note
-                            oscillator.frequency.setValueAtTime(freq, currentTime + i * 0.15); // Faster
-                            gainNode.gain.setValueAtTime(0.2 * volume, currentTime + i * 0.15); // Reduced from 0.3
-                        });
-                        
-                        gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.8); // Shorter
-                        
-                        oscillator.start();
-                        oscillator.stop(currentTime + 0.8); // Shorter duration
-                    },
-                    'reroll': () => {
-                        // Simplified reroll sound - fewer dice, softer
-                        const diceCount = 3; // Reduced from 5
-                        
-                        for (let i = 0; i < diceCount; i++) {
-                            const rollOsc = audioContext.createOscillator();
-                            const rollGain = audioContext.createGain();
-                            
-                            rollOsc.connect(rollGain);
-                            rollGain.connect(audioContext.destination);
-                            
-                            rollOsc.type = 'sine'; // Changed to sine for softer sound
-                            
-                            // Fewer random frequencies
-                            for (let j = 0; j < 4; j++) { // Reduced from 8
-                                const time = currentTime + (i * 0.08) + (j * 0.05);
-                                rollOsc.frequency.setValueAtTime(180 + Math.random() * 220, time); // Narrower range
-                            }
-                            
-                            const startTime = currentTime + (i * 0.06);
-                            const stopTime = startTime + 0.3; // Shorter
-                            
-                            rollGain.gain.setValueAtTime(0.03 * volume, startTime); // Reduced from 0.05
-                            rollGain.gain.linearRampToValueAtTime(0.06 * volume, startTime + 0.1); // Reduced from 0.1
-                            rollGain.gain.exponentialRampToValueAtTime(0.01 * volume, stopTime);
-                            
-                            rollOsc.start(startTime);
-                            rollOsc.stop(stopTime);
-                        }
-                        
-                        // Simpler, softer final impact
-                        setTimeout(() => {
-                            const impactOsc = audioContext.createOscillator();
-                            const impactGain = audioContext.createGain();
-                            
-                            impactOsc.connect(impactGain);
-                            impactGain.connect(audioContext.destination);
-                            
-                            impactOsc.type = 'sine';
-                            impactOsc.frequency.setValueAtTime(280, currentTime);
-                            impactOsc.frequency.exponentialRampToValueAtTime(180, currentTime + 0.15);
-                            
-                            impactGain.gain.setValueAtTime(0.15 * volume, currentTime); // Reduced from 0.3
-                            impactGain.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.2);
-                            
-                            impactOsc.start();
-                            impactOsc.stop(currentTime + 0.2);
-                        }, 300); // Faster
-                    },
-                    'letterChange': () => {
-                        oscillator.type = 'sine';
-                        
-                        oscillator.frequency.setValueAtTime(1000, currentTime); // Lower
-                        oscillator.frequency.exponentialRampToValueAtTime(1800, currentTime + 0.1); // Lower
-                        oscillator.frequency.exponentialRampToValueAtTime(1400, currentTime + 0.2); // Lower
-                        
-                        gainNode.gain.setValueAtTime(0.15 * volume, currentTime); // Reduced from 0.2
                         gainNode.gain.linearRampToValueAtTime(0.2 * volume, currentTime + 0.05); // Reduced from 0.3
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
