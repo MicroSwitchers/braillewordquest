@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Braille Word Quest</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -32,6 +32,13 @@
             min-height: 100vh;
             color: var(--light-text);
             transition: var(--transition);
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+            -webkit-touch-callout: none; /* Prevent callout to copy image */
+            -webkit-user-select: none; /* Safari */
+            -khtml-user-select: none; /* Konqueror HTML */
+            -moz-user-select: none; /* Firefox */
+            -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version */
         }
 
         /* High Contrast Mode */
@@ -48,15 +55,19 @@
             --shadow: none;
         }
 
-        .app-container {max-width: 800px; margin: 0 auto; padding: 20px;}
+        .app-container {
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 15px 10px;
+        }
 
         h1 {
             text-align: center;
             font-weight: 700;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
+            font-size: 2.2rem;
+            margin-bottom: 20px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             background: linear-gradient(to right, #ffffff, #a9d0fc);
             -webkit-background-clip: text;
             background-clip: text;
@@ -67,11 +78,11 @@
         h1::after {
             content: '';
             position: absolute;
-            bottom: -10px;
+            bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            width: 150px;
-            height: 4px;
+            width: 120px;
+            height: 3px;
             background: linear-gradient(to right, #ffffff99, #ffffff33);
             border-radius: 2px;
         }
@@ -91,11 +102,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px;
+            gap: 16px;
             background: var(--bg-semi);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 16px;
+            padding: 16px 12px;
             box-shadow: var(--shadow);
             border: 2px solid var(--border-color);
             position: relative;
@@ -111,14 +122,16 @@
         .board {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-            margin-bottom: 25px;
+            gap: 8px;
+            margin-bottom: 16px;
             perspective: 1000px;
+            width: 100%;
+            max-width: 400px;
         }
 
         .die {
-            width: 70px;
-            height: 70px;
+            width: 56px;
+            height: 56px;
             background: var(--bg-light);
             border-radius: var(--border-radius);
             display: flex;
@@ -126,10 +139,11 @@
             align-items: center;
             cursor: pointer;
             position: relative;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             transition: transform 0.3s var(--anim-timing), box-shadow 0.3s, background-color 0.3s;
             transform-style: preserve-3d;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            touch-action: manipulation; /* Improve touch response */
         }
 
         body.high-contrast .die {
@@ -137,9 +151,9 @@
             box-shadow: none;
         }
 
-        .die:hover {
-            transform: translateY(-5px) rotateX(10deg);
-            box-shadow: 0 12px 16px rgba(0,0,0,0.2), inset 0 -3px 0 rgba(0,0,0,0.1);
+        .die:hover, .die:active {
+            transform: translateY(-3px) rotateX(5deg);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2), inset 0 -3px 0 rgba(0,0,0,0.1);
             background-color: #f0f9ff;
         }
 
@@ -147,8 +161,8 @@
 
         .die.selected {
             background: linear-gradient(135deg, #9be15d 0%, #00e3ae 100%);
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.25), 0 0 15px rgba(155, 225, 93, 0.5);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.25), 0 0 15px rgba(155, 225, 93, 0.5);
         }
 
         body.high-contrast .die.selected {background: var(--primary-color); box-shadow: none;}
@@ -156,15 +170,15 @@
         /* Braille Display */
         .braille-cell {
             position: relative;
-            width: 40px;
-            height: 60px;
+            width: 36px;
+            height: 48px;
             transform: translateZ(5px);
         }
 
         .braille-dot {
             position: absolute;
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background-color: #333;
             opacity: 0.15;
@@ -183,26 +197,26 @@
         body.high-contrast .braille-dot.filled {background-color: white; opacity: 1; box-shadow: none;}
         body.high-contrast .die.selected .braille-dot.filled {background-color: black;}
 
-        /* Braille dot positions */
-        .braille-dot:nth-child(1) { top: 5px; left: 5px; }
-        .braille-dot:nth-child(2) { top: 25px; left: 5px; }
-        .braille-dot:nth-child(3) { top: 45px; left: 5px; }
-        .braille-dot:nth-child(4) { top: 5px; left: 25px; }
-        .braille-dot:nth-child(5) { top: 25px; left: 25px; }
-        .braille-dot:nth-child(6) { top: 45px; left: 25px; }
+        /* Braille dot positions - optimized spacing */
+        .braille-dot:nth-child(1) { top: 4px; left: 4px; }
+        .braille-dot:nth-child(2) { top: 20px; left: 4px; }
+        .braille-dot:nth-child(3) { top: 36px; left: 4px; }
+        .braille-dot:nth-child(4) { top: 4px; left: 20px; }
+        .braille-dot:nth-child(5) { top: 20px; left: 20px; }
+        .braille-dot:nth-child(6) { top: 36px; left: 20px; }
 
         /* Print Letter Display */
         .print-letter {
             position: absolute;
             top: 1px;
             right: 2px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             color: #333;
             display: none;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
+            width: 14px;
+            height: 14px;
+            line-height: 14px;
             text-align: center;
             z-index: 5;
         }
@@ -215,17 +229,17 @@
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             width: 100%;
             max-width: 400px;
         }
 
         button {
-            padding: 12px 20px;
+            padding: 12px 16px;
             border: 2px solid var(--border-color);
             border-radius: 50px;
             cursor: pointer;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             letter-spacing: 0.5px;
             transition: var(--transition);
@@ -234,21 +248,23 @@
             color: white;
             text-transform: uppercase;
             box-shadow: var(--shadow);
+            min-height: 48px; /* Minimum height for touch targets */
+            touch-action: manipulation;
         }
 
         button:active {transform: translateY(2px); box-shadow: 0 2px 5px rgba(0,0,0,0.15);}
 
         #submit-btn {background: linear-gradient(to right, #00b09b, #96c93d);}
-        #submit-btn:hover {background: linear-gradient(to right, #00c2a8, #a5d84c); box-shadow: 0 6px 20px rgba(0,176,155,0.4);}
+        #submit-btn:hover, #submit-btn:active {background: linear-gradient(to right, #00c2a8, #a5d84c); box-shadow: 0 6px 20px rgba(0,176,155,0.4);}
 
         #clear-btn {background: linear-gradient(to right, #ff7e5f, #feb47b);}
-        #clear-btn:hover {background: linear-gradient(to right, #ff8e73, #fec28f); box-shadow: 0 6px 20px rgba(255,126,95,0.4);}
+        #clear-btn:hover, #clear-btn:active {background: linear-gradient(to right, #ff8e73, #fec28f); box-shadow: 0 6px 20px rgba(255,126,95,0.4);}
 
         #new-game-btn {background: linear-gradient(to right, #4776E6, #8E54E9);}
-        #new-game-btn:hover {background: linear-gradient(to right, #5883f7, #9d63fa); box-shadow: 0 6px 20px rgba(142,84,233,0.4);}
+        #new-game-btn:hover, #new-game-btn:active {background: linear-gradient(to right, #5883f7, #9d63fa); box-shadow: 0 6px 20px rgba(142,84,233,0.4);}
 
         #reroll-btn {background: linear-gradient(to right, #9733EE, #DA22FF);}
-        #reroll-btn:hover {background: linear-gradient(to right, #a344ff, #e933ff); box-shadow: 0 6px 20px rgba(154,51,238,0.4);}
+        #reroll-btn:hover, #reroll-btn:active {background: linear-gradient(to right, #a344ff, #e933ff); box-shadow: 0 6px 20px rgba(154,51,238,0.4);}
 
         button:disabled {
             background: #cfd8dc !important; 
@@ -265,16 +281,15 @@
             box-shadow: none;
         }
 
-        body.high-contrast button:hover {background: #333 !important; box-shadow: none;}
+        body.high-contrast button:hover, body.high-contrast button:active {background: #333 !important; box-shadow: none;}
         body.high-contrast button:disabled {background: #333 !important; color: #666; border-color: #666;}
 
         /* Word Input and Display */
-        .word-input {display: flex; gap: 10px; margin-bottom: 10px; width: 100%;}
+        .word-input {display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; width: 100%;}
 
         #current-word {
-            flex-grow: 1;
-            font-size: 18px;
-            padding: 15px;
+            font-size: 16px;
+            padding: 12px;
             border-radius: var(--border-radius);
             border: 2px solid var(--border-color);
             background-color: var(--bg-light);
@@ -284,6 +299,7 @@
             color: var(--text-color);
             font-weight: 500;
             letter-spacing: 1px;
+            text-align: center;
         }
 
         body.high-contrast #current-word {
@@ -296,11 +312,11 @@
         /* Game Info Panel */
         .game-info {
             display: flex;
-            justify-content: space-between;
+            justify-content: space-around;
             width: 100%;
             max-width: 400px;
-            margin-bottom: 20px;
-            padding: 15px 20px;
+            margin-bottom: 12px;
+            padding: 10px 15px;
             background: rgba(0, 0, 0, 0.2);
             border-radius: 50px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -310,12 +326,12 @@
         body.high-contrast .game-info {background: #333; box-shadow: none; border: 2px solid white;}
 
         .timer, .score, .rerolls {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 700;
             color: var(--light-text);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         body.high-contrast .timer, body.high-contrast .score, body.high-contrast .rerolls {color: var(--primary-color);}
@@ -330,8 +346,8 @@
             max-width: 400px;
             background: var(--bg-light);
             border-radius: var(--border-radius);
-            padding: 15px;
-            max-height: 200px;
+            padding: 12px;
+            max-height: 160px;
             overflow-y: auto;
             box-shadow: var(--shadow);
             transition: var(--transition);
@@ -339,6 +355,7 @@
             scrollbar-color: var(--primary-color) #e0e0e0;
             position: relative;
             border: 2px solid var(--border-color);
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
         }
 
         body.high-contrast .word-list {background: var(--bg-light); border: 2px solid white; box-shadow: none;}
@@ -349,11 +366,12 @@
             top: 0;
             background: var(--bg-light);
             padding: 5px 0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: var(--text-color);
             font-weight: 600;
             text-align: center;
             border-bottom: 2px solid #e0e0e0;
+            font-size: 16px;
         }
 
         body.high-contrast .word-list h3 {
@@ -365,9 +383,9 @@
         .word-list ul {list-style-type: none; padding: 0; margin: 0;}
 
         .word-list li {
-            padding: 8px 12px;
-            border-radius: 8px;
-            margin-bottom: 5px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 4px;
             font-weight: 500;
             color: var(--text-color);
             display: flex;
@@ -375,12 +393,13 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             background: rgba(255, 255, 255, 0.5);
             transition: var(--transition);
+            font-size: 14px;
         }
 
         body.high-contrast .word-list li {background: #333; color: white; box-shadow: none;}
         
-        .word-list li:hover {background: rgba(255, 255, 255, 0.8); transform: translateX(5px);}
-        body.high-contrast .word-list li:hover {background: #444;}
+        .word-list li:hover, .word-list li:active {background: rgba(255, 255, 255, 0.8); transform: translateX(5px);}
+        body.high-contrast .word-list li:hover, body.high-contrast .word-list li:active {background: #444;}
 
         .word-list li .word-score {color: var(--primary-color); font-weight: 700;}
 
@@ -392,9 +411,9 @@
             transform: translate(-50%, -50%);
             background: rgba(46, 204, 113, 0.9);
             color: white;
-            padding: 15px 25px;
+            padding: 12px 20px;
             border-radius: 50px;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: 700;
             opacity: 0;
             transition: all 0.4s var(--anim-timing);
@@ -402,6 +421,8 @@
             z-index: 50;
             box-shadow: 0 5px 25px rgba(46, 204, 113, 0.5);
             text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            max-width: 90%;
+            text-align: center;
         }
 
         body.high-contrast #word-confirmation {
@@ -417,14 +438,16 @@
         /* Accessibility controls */
         .accessibility-controls {
             display: flex;
+            flex-direction: column;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            padding: 10px;
+            gap: 8px;
+            margin-bottom: 16px;
+            padding: 12px 10px;
             background: var(--bg-semi);
             border-radius: 15px;
             border: 2px solid var(--border-color);
+            width: 100%;
+            max-width: 400px;
         }
 
         body.high-contrast .accessibility-controls {background: #222; border: 2px solid var(--primary-color);}
@@ -432,6 +455,7 @@
         .toggle-control, .volume-control {
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 8px;
             cursor: pointer;
             padding: 8px 12px;
@@ -439,6 +463,7 @@
             background: rgba(255, 255, 255, 0.2);
             transition: var(--transition);
             border: 1px solid var(--border-color);
+            min-height: 44px; /* Minimum height for touch targets */
         }
 
         body.high-contrast .toggle-control, body.high-contrast .volume-control {
@@ -446,8 +471,9 @@
             border: 1px solid var(--primary-color);
         }
 
-        .toggle-control:hover, .volume-control:hover {background: rgba(255, 255, 255, 0.3);}
-        body.high-contrast .toggle-control:hover, body.high-contrast .volume-control:hover {background: #444;}
+        .toggle-control:hover, .toggle-control:active, .volume-control:hover, .volume-control:active {background: rgba(255, 255, 255, 0.3);}
+        body.high-contrast .toggle-control:hover, body.high-contrast .toggle-control:active, 
+        body.high-contrast .volume-control:hover, body.high-contrast .volume-control:active {background: #444;}
 
         /* Toggle switch styling */
         .toggle-switch {position: relative; display: inline-block; width: 40px; height: 20px;}
@@ -489,10 +515,15 @@
         body.high-contrast .toggle-label {color: var(--primary-color);}
 
         /* Volume slider */
+        .volume-control {
+            padding-right: 16px;
+        }
+
         .volume-slider {
             width: 80px;
             height: 10px;
             -webkit-appearance: none;
+            appearance: none;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 5px;
             outline: none;
@@ -551,11 +582,11 @@
             box-shadow: none;
         }
 
-        .instructions-drawer.open {max-height: 70vh; padding: 20px;}
+        .instructions-drawer.open {max-height: 80vh; padding: 20px;}
 
         .drawer-handle {
-            width: 100px;
-            height: 5px;
+            width: 80px;
+            height: 4px;
             background: #ddd;
             border-radius: 5px;
             margin: 0 auto 15px;
@@ -564,11 +595,11 @@
 
         body.high-contrast .drawer-handle {background: var(--primary-color);}
 
-        .drawer-content {max-width: 800px; margin: 0 auto; color: var(--text-color);}
+        .drawer-content {max-width: 600px; margin: 0 auto; color: var(--text-color);}
         body.high-contrast .drawer-content {color: white;}
 
         .drawer-content h2 {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             margin-top: 5px;
             color: var(--primary-color);
@@ -589,6 +620,12 @@
 
         body.high-contrast .drawer-content h2:after {background: var(--primary-color);}
 
+        .drawer-content p {
+            font-size: 14px;
+            margin: 12px 0;
+            line-height: 1.4;
+        }
+
         .drawer-content p:last-of-type {
             background: rgba(147, 51, 234, 0.1);
             padding: 12px;
@@ -603,10 +640,10 @@
 
         .drawer-toggle {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
+            bottom: 16px;
+            right: 16px;
+            width: 50px;
+            height: 50px;
             background: var(--primary-grad);
             border-radius: 50%;
             display: flex;
@@ -625,7 +662,7 @@
             box-shadow: none;
         }
 
-        .drawer-toggle:hover {transform: scale(1.1);}
+        .drawer-toggle:hover, .drawer-toggle:active {transform: scale(1.1);}
         .drawer-toggle span {color: white; font-size: 24px; font-weight: 700;}
         body.high-contrast .drawer-toggle span {color: var(--primary-color);}
 
@@ -648,10 +685,10 @@
 
         .modal-content {
             background: white; /* Solid white instead of gradient for better contrast */
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 500px;
-            width: 90%;
+            padding: 20px;
+            border-radius: 16px;
+            max-width: 90%;
+            width: 320px;
             text-align: center;
             position: relative;
             z-index: 10;
@@ -671,7 +708,7 @@
         .modal h2 {
             margin-top: 0;
             color: var(--primary-color);
-            font-size: 32px;
+            font-size: 24px;
             font-weight: 800;
             margin-bottom: 10px;
             position: relative;
@@ -689,23 +726,25 @@
             border-radius: 3px;
         }
 
-        .modal p {font-size: 18px; margin: 15px 0; color: #333; font-weight: 500;} /* Darker text color */
+        .modal p {font-size: 16px; margin: 12px 0; color: #333; font-weight: 500;} /* Darker text color */
         body.high-contrast .modal p {color: white;}
         
         /* Modal Button Styling */
         .modal button {
-            margin-top: 25px;
-            font-size: 18px;
-            padding: 12px 30px;
+            margin-top: 20px;
+            font-size: 16px;
+            padding: 12px 25px;
             background: var(--primary-color);
             color: white;
             border-radius: 50px;
             box-shadow: 0 5px 15px rgba(106, 17, 203, 0.4);
             border: none;
             font-weight: 600;
+            width: 80%;
+            max-width: 200px;
         }
         
-        .modal button:hover {
+        .modal button:hover, .modal button:active {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(106, 17, 203, 0.5);
             background: #7d20e3; /* Slightly lighter for hover state */
@@ -718,7 +757,7 @@
         }
 
         #final-score, #words-found {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 800;
             color: #d91e18; /* Vibrant but accessible red */
             display: inline-block;
@@ -735,11 +774,11 @@
         }
 
         #celebration-message {
-            font-size: 22px;
+            font-size: 18px;
             color: #6a11cb; /* Match our primary color */
-            margin: 20px 0;
+            margin: 16px 0;
             font-weight: 700;
-            padding: 10px 15px;
+            padding: 8px 12px;
             background: rgba(106, 17, 203, 0.1);
             border-radius: 10px;
             display: inline-block;
@@ -914,194 +953,54 @@
             aria-live: polite;
         }
 
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .app-container {padding: 10px;}
-            h1 {font-size: 2rem; margin-bottom: 20px;}
-            .board { gap: 8px; }
-            .die { width: 60px; height: 60px; }
-            .braille-cell { width: 35px; height: 55px; }
-            .game-info { flex-direction: column; align-items: center; gap: 10px; border-radius: 15px; padding: 10px; }
-            .accessibility-controls { flex-direction: column; padding: 15px; }
-            .toggle-control, .volume-control { width: 100%; justify-content: space-between; }
-            .drawer-toggle {bottom: 15px; right: 15px; width: 50px; height: 50px;}
-        }
-
-        @media (max-width: 576px) {
-            .board { 
-                grid-template-columns: repeat(5, 1fr);
-                gap: 6px;
-                max-width: 100%;
-                margin-bottom: 15px;
-            }
-            .die { 
-                width: calc(18vw - 10px);
-                height: calc(18vw - 10px); 
-                min-width: 40px;
-                min-height: 40px;
-            }
-            .braille-cell { 
-                width: calc(12vw); 
-                height: calc(16vw);
-                min-width: 24px;
-                min-height: 36px; 
-            }
-            .braille-dot { width: 8px; height: 8px; }
-            .word-input { flex-direction: column; gap: 8px; }
-            #current-word { padding: 10px; font-size: 16px; }
-            #submit-btn, #clear-btn, #reroll-btn, #new-game-btn { 
-                width: 100%; 
-                padding: 10px;
-                font-size: 14px;
-            }
-            .print-letter { font-size: 12px; right: 2px; top: 1px; width: 14px; height: 14px; line-height: 14px; }
-            .game-container {padding: 15px 10px;}
-            .controls {gap: 8px;}
-            
-            .modal-content {
-                padding: 20px 15px;
-                width: 95%;
+        /* Responsive design - improved for small screens */
+        @media (max-width: 400px) {
+            /* Further optimized layout for very small screens */
+            .app-container {
+                padding: 10px 5px;
             }
             
-            .modal h2 {font-size: 24px;}
-            .modal p {font-size: 16px;}
-            #final-score, #words-found {font-size: 22px;}
-            
-            .timer, .score, .rerolls {font-size: 16px;}
-            
-            /* Adjust Braille dot positions for smaller screens */
-            .braille-dot:nth-child(1) { top: 4px; left: 4px; }
-            .braille-dot:nth-child(2) { top: 18px; left: 4px; }
-            .braille-dot:nth-child(3) { top: 32px; left: 4px; }
-            .braille-dot:nth-child(4) { top: 4px; left: 18px; }
-            .braille-dot:nth-child(5) { top: 18px; left: 18px; }
-            .braille-dot:nth-child(6) { top: 32px; left: 18px; }
-        }
-
-        /* Very small screens */
-        @media (max-width: 360px) {
-            h1 {font-size: 1.7rem;}
-            .die {
-                width: calc(19vw - 10px);
-                height: calc(19vw - 10px);
-                min-width: 35px;
-                min-height: 35px;
+            h1 {
+                font-size: 1.6rem;
+                margin-bottom: 12px;
             }
-            .braille-cell {
-                width: calc(13vw);
-                height: calc(17vw);
+            
+            .game-container {
+                padding: 12px 8px;
+                gap: 12px;
             }
-            .braille-dot {width: 6px; height: 6px;}
             
-            /* Tighter Braille dot layout */
-            .braille-dot:nth-child(1) { top: 3px; left: 3px; }
-            .braille-dot:nth-child(2) { top: 15px; left: 3px; }
-            .braille-dot:nth-child(3) { top: 27px; left: 3px; }
-            .braille-dot:nth-child(4) { top: 3px; left: 15px; }
-            .braille-dot:nth-child(5) { top: 15px; left: 15px; }
-            .braille-dot:nth-child(6) { top: 27px; left: 15px; }
-        }
-
-        @keyframes popIn {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Responsive design - improved version */
-        @media (max-width: 768px) {
-            .app-container {padding: 10px 5px;}
-            h1 {font-size: 1.8rem; margin-bottom: 15px;}
-            
-            /* Improved board layout for tablets */
+            /* Optimize the board for tiny screens */
             .board {
-                gap: 8px;
-                margin: 0 auto 15px;
-                max-width: 500px;
+                gap: 4px;
+                margin: 0 auto 10px;
             }
             
-            /* Better sized dice for tablets */
+            /* Make dice touch-friendly but not too large */
             .die {
-                width: 55px;
-                height: 55px;
+                width: calc((100vw - 40px) / 5);
+                height: calc((100vw - 40px) / 5);
+                min-width: 44px; /* Good touch target size */
+                min-height: 44px;
                 border-radius: 8px;
-            }
-            
-            /* Adjusted braille cells for tablets */
-            .braille-cell {
-                width: 32px;
-                height: 48px;
-            }
-            
-            /* More compact game info for vertical stacking */
-            .game-info {
-                flex-direction: column;
-                align-items: center;
-                gap: 8px;
-                border-radius: 15px;
-                padding: 10px;
-                margin-bottom: 15px;
-            }
-            
-            /* Full-width controls for accessibility */
-            .accessibility-controls {
-                flex-direction: column;
-                padding: 12px;
-                gap: 8px;
-            }
-            
-            .toggle-control, .volume-control {
-                width: 100%;
-                justify-content: space-between;
-            }
-            
-            /* Repositioned help button */
-            .drawer-toggle {
-                bottom: 15px;
-                right: 15px;
-                width: 50px;
-                height: 50px;
-            }
-            
-            /* Better word list display */
-            .word-list {
-                max-height: 180px;
-            }
-        }
-
-        @media (max-width: 576px) {
-            /* Full-width board with proper spacing */
-            .board { 
-                grid-template-columns: repeat(5, 1fr);
-                gap: 5px;
-                max-width: 100%;
-                margin: 0 auto 12px;
-            }
-            
-            /* Fixed-size dice with minimum dimensions */
-            .die { 
-                width: calc(19vw - 12px);
-                height: calc(19vw - 12px);
-                min-width: 42px;
-                min-height: 42px;
-                border-radius: 6px;
                 border-width: 1px;
             }
             
-            /* Properly sized braille cells */
-            .braille-cell { 
-                width: calc(11vw);
-                height: calc(14vw);
+            /* Adjust braille cells to fit */
+            .braille-cell {
+                width: calc((100vw - 70px) / 5);
+                height: calc(((100vw - 70px) / 5) * 1.4);
                 min-width: 28px;
-                min-height: 36px;
+                min-height: 38px;
             }
             
-            /* Smaller braille dots that remain visible */
+            /* Properly sized braille dots */
             .braille-dot {
                 width: 6px;
                 height: 6px;
             }
             
-            /* Adjusted braille dot positions */
+            /* Well-spaced braille dot positions */
             .braille-dot:nth-child(1) { top: 3px; left: 3px; }
             .braille-dot:nth-child(2) { top: 14px; left: 3px; }
             .braille-dot:nth-child(3) { top: 25px; left: 3px; }
@@ -1109,103 +1008,76 @@
             .braille-dot:nth-child(5) { top: 14px; left: 14px; }
             .braille-dot:nth-child(6) { top: 25px; left: 14px; }
             
-            /* Vertical stacking for word input area */
-            .word-input {
-                flex-direction: column;
+            /* Optimize game info */
+            .game-info {
+                padding: 8px 12px;
+                flex-wrap: wrap;
                 gap: 8px;
             }
             
-            /* Better sized current word display */
-            #current-word {
-                padding: 10px;
-                font-size: 16px;
-                text-align: center;
-            }
-            
-            /* Full-width buttons with proper sizing */
-            #submit-btn, #clear-btn, #reroll-btn, #new-game-btn { 
-                width: 100%;
-                padding: 10px;
+            .timer, .score, .rerolls {
                 font-size: 14px;
-                margin: 0;
             }
             
-            /* Smaller print letters */
-            .print-letter {
-                font-size: 10px;
-                right: 2px;
-                top: 1px;
-                width: 12px;
-                height: 12px;
-                line-height: 12px;
-            }
-            
-            /* Better padded game container */
-            .game-container {
-                padding: 15px 8px;
-                border-radius: 15px;
-            }
-            
-            /* Tighter controls spacing */
-            .controls {gap: 6px;}
-            
-            /* Better modal styling */
-            .modal-content {
-                padding: 15px 12px;
-                width: 95%;
-                border-radius: 15px;
-            }
-            
-            .modal h2 {font-size: 20px;}
-            .modal p {font-size: 14px;}
-            #final-score, #words-found {font-size: 18px;}
-            
-            /* Better sized game info elements */
-            .timer, .score, .rerolls {font-size: 14px;}
-            
-            /* Word list improvements */
+            /* More compact list */
             .word-list {
-                padding: 10px;
-                max-height: 150px;
+                max-height: 140px;
             }
             
-            .word-list h3 {
-                font-size: 16px;
-                margin-bottom: 8px;
+            .accessibility-controls {
+                padding: 10px 8px;
             }
             
-            .word-list li {
-                padding: 6px 10px;
-                margin-bottom: 4px;
+            button {
                 font-size: 14px;
+                padding: 10px 12px;
+            }
+            
+            /* Smaller modal for tiny screens */
+            .modal-content {
+                padding: 16px 12px;
+            }
+            
+            .modal h2 {
+                font-size: 20px;
+            }
+            
+            #final-score, #words-found {
+                font-size: 20px;
+            }
+            
+            #celebration-message {
+                font-size: 16px;
             }
         }
 
-        /* Very small screens */
-        @media (max-width: 360px) {
-            h1 {font-size: 1.5rem; margin-bottom: 12px;}
-            
-            /* Further optimized dice */
-            .die {
-                width: calc(19vw - 8px);
-                height: calc(19vw - 8px);
-                min-width: 36px;
-                min-height: 36px;
-                border-radius: 5px;
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* iPhone 5/SE and smaller */
+        @media (max-width: 320px) {
+            h1 {
+                font-size: 1.4rem;
             }
             
-            /* Compact braille cell */
+            .die {
+                min-width: 38px;
+                min-height: 38px;
+            }
+            
             .braille-cell {
-                width: calc(12vw);
-                height: calc(15vw);
                 min-width: 24px;
                 min-height: 32px;
             }
             
-            /* Smallest viable braille dots */
-            .braille-dot {width: 5px; height: 5px;}
+            .braille-dot {
+                width: 5px;
+                height: 5px;
+            }
             
-            /* Tightest braille layout that still works */
+            /* Even tighter layout for braille dots */
             .braille-dot:nth-child(1) { top: 2px; left: 2px; }
             .braille-dot:nth-child(2) { top: 12px; left: 2px; }
             .braille-dot:nth-child(3) { top: 22px; left: 2px; }
@@ -1213,16 +1085,52 @@
             .braille-dot:nth-child(5) { top: 12px; left: 12px; }
             .braille-dot:nth-child(6) { top: 22px; left: 12px; }
             
-            /* Tighter game container */
-            .game-container {padding: 12px 5px;}
+            button {
+                font-size: 13px;
+            }
             
-            /* Smaller buttons with less padding */
-            button {padding: 8px 12px; font-size: 13px;}
+            .timer, .score, .rerolls {
+                font-size: 12px;
+            }
             
-            /* Simplified game info */
-            .game-info {
-                padding: 8px 10px;
-                margin-bottom: 10px;
+            .toggle-label {
+                font-size: 12px;
+            }
+        }
+
+        /* Prevent text size adjustment on iOS when changing orientation */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* Disable rubber-band scrolling on iOS */
+        html, body {
+            position: fixed;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .app-container {
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        /* Fix for spacing issues on iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .die {
+                margin: 0;
+            }
+            
+            button {
+                margin: 0;
             }
         }
     </style>
@@ -1235,19 +1143,19 @@
         <!-- Accessibility Controls -->
         <div class="accessibility-controls" aria-label="Accessibility options">
             <div class="toggle-control" aria-label="Toggle print letters">
+                <span class="toggle-label">Show Print Letters</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="print-letters-toggle" aria-label="Show print letters">
                     <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">Show Print Letters</span>
             </div>
             
             <div class="toggle-control" aria-label="Toggle high contrast mode">
+                <span class="toggle-label">High Contrast</span>
                 <label class="toggle-switch">
                     <input type="checkbox" id="high-contrast-toggle" aria-label="Enable high contrast mode">
                     <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">High Contrast</span>
             </div>
             
             <div class="volume-control" aria-label="Sound volume control">
@@ -1260,8 +1168,8 @@
         <div class="game-container" aria-label="Braille Boggle Game">
             <div class="game-info" aria-live="polite">
                 <div class="timer" aria-label="Game time remaining">Time: 3:00</div>
-                <div class="rerolls" aria-label="Rerolls remaining">Rerolls: <span id="rerolls-remaining">2</span></div>
                 <div class="score" aria-label="Current score">Score: 0</div>
+                <div class="rerolls" aria-label="Rerolls remaining">Rerolls: <span id="rerolls-remaining">2</span></div>
             </div>
             
             <div class="board" id="board" role="grid" aria-label="Braille game board"></div>
@@ -1379,6 +1287,16 @@
             const volumeSlider = document.getElementById('volume-slider');
             const soundIcon = document.getElementById('sound-icon');
             const screenReaderAnnouncer = document.getElementById('screen-reader-announcer');
+            
+            // Fix for iOS rubber-band scrolling
+            document.body.addEventListener('touchmove', function(e) {
+                if (e.target.classList.contains('volume-slider') || 
+                    e.target.classList.contains('word-list') || 
+                    e.target.closest('.word-list')) {
+                    return;
+                }
+                e.preventDefault();
+            }, { passive: false });
             
             // Initialize 
             initAccessibilityControls();
@@ -1544,6 +1462,10 @@
                     
                     // Add click event
                     dieElement.addEventListener('click', handleDieClick);
+                    dieElement.addEventListener('touchstart', function(e) {
+                        // Prevent zoom on double-tap for iOS
+                        e.preventDefault();
+                    }, false);
                     
                     // Keyboard support
                     dieElement.addEventListener('keydown', e => {
@@ -1705,6 +1627,11 @@
                 currentWord += board[index];
                 currentWordElement.textContent = currentWord;
                 
+                // Provide haptic feedback on supported devices
+                if (navigator.vibrate) {
+                    navigator.vibrate(20);
+                }
+                
                 announceToScreenReader(`Added letter ${board[index]}. Current word: ${currentWord}.`);
             }
             
@@ -1783,6 +1710,11 @@
                 
                 playSound('wordFound');
                 
+                // Provide haptic feedback on supported devices
+                if (navigator.vibrate) {
+                    navigator.vibrate([30, 20, 30]);
+                }
+                
                 announceToScreenReader(`Word "${currentWord}" found! You earned ${wordScore} points. Your total score is now ${score}.`);
                 
                 clearSelection();
@@ -1827,6 +1759,11 @@
                 
                 clearSelection();
                 playSound('reroll');
+                
+                // Provide haptic feedback on supported devices
+                if (navigator.vibrate) {
+                    navigator.vibrate([20, 20, 40, 20, 60]);
+                }
                 
                 announceToScreenReader("Rerolling dice positions. Letters will remain the same but positions will change.");
                 
@@ -1955,6 +1892,11 @@
                 clearBtn.disabled = true;
                 rerollBtn.disabled = true;
                 
+                // Provide haptic feedback on supported devices
+                if (navigator.vibrate) {
+                    navigator.vibrate([40, 30, 40, 30, 80]);
+                }
+                
                 announceToScreenReader(`Game over! Your final score is ${score} points with ${foundWords.length} words found. ${celebrationMessage}`);
             }
             
@@ -1971,15 +1913,18 @@
                 const confettiContainer = document.getElementById('confetti-container');
                 confettiContainer.innerHTML = '';
                 
-                for (let i = 0; i < 150; i++) {
+                // Use fewer confetti pieces on mobile to prevent performance issues
+                const confettiCount = window.innerWidth < 500 ? 75 : 150;
+                
+                for (let i = 0; i < confettiCount; i++) {
                     const confetti = document.createElement('div');
                     confetti.className = 'confetti';
                     
                     const color = `hsl(${Math.random() * 360}, 100%, 50%)`;
                     const left = Math.random() * 100;
-                    const size = Math.random() * 10 + 5;
-                    const duration = Math.random() * 3 + 3;
-                    const delay = Math.random() * 2;
+                    const size = Math.random() * 8 + 4; // Smaller sizes for mobile
+                    const duration = Math.random() * 2.5 + 2.5;
+                    const delay = Math.random() * 1.5;
                     
                     const shapes = ['50%', '0%', '50% 0 0 50%'];
                     const shape = shapes[Math.floor(Math.random() * shapes.length)];
@@ -2001,13 +1946,18 @@
             function playSound(type) {
                 if (soundMuted) return;
                 
+                // Try to ensure AudioContext is running on iOS
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
                 
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
-                const volume = soundVolume * 0.7; // Reduce overall volume by 30%
+                const volume = soundVolume * 0.5; // Reduce overall volume for mobile
                 const currentTime = audioContext.currentTime;
                 
                 // Different sound types
@@ -2017,7 +1967,7 @@
                         oscillator.frequency.setValueAtTime(440, currentTime);
                         oscillator.frequency.exponentialRampToValueAtTime(880, currentTime + 0.1);
                         
-                        gainNode.gain.setValueAtTime(0.2 * volume, currentTime); // Reduced from 0.3
+                        gainNode.gain.setValueAtTime(0.15 * volume, currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
                         oscillator.start();
@@ -2025,7 +1975,7 @@
                     },
                     'gameOver': () => {
                         oscillator.type = 'triangle';
-                        gainNode.gain.linearRampToValueAtTime(0.2 * volume, currentTime + 0.05); // Reduced from 0.3
+                        gainNode.gain.linearRampToValueAtTime(0.15 * volume, currentTime + 0.05);
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
                         oscillator.start();
@@ -2033,21 +1983,21 @@
                     },
                     'warningChange': () => {
                         oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(550, currentTime); // Lower
-                        oscillator.frequency.linearRampToValueAtTime(380, currentTime + 0.2); // Lower
+                        oscillator.frequency.setValueAtTime(550, currentTime);
+                        oscillator.frequency.linearRampToValueAtTime(380, currentTime + 0.2);
                         
-                        gainNode.gain.setValueAtTime(0.08 * volume, currentTime); // Reduced from 0.1
+                        gainNode.gain.setValueAtTime(0.06 * volume, currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
                         oscillator.start();
                         oscillator.stop(currentTime + 0.3);
                     },
                     'warningSwap': () => {
-                        oscillator.type = 'sine'; // Changed from triangle for softer sound
-                        oscillator.frequency.setValueAtTime(350, currentTime); // Lower
-                        oscillator.frequency.linearRampToValueAtTime(280, currentTime + 0.2); // Lower
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(350, currentTime);
+                        oscillator.frequency.linearRampToValueAtTime(280, currentTime + 0.2);
                         
-                        gainNode.gain.setValueAtTime(0.08 * volume, currentTime); // Reduced from 0.1
+                        gainNode.gain.setValueAtTime(0.06 * volume, currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
                         oscillator.start();
@@ -2055,14 +2005,25 @@
                     },
                     'tileSaved': () => {
                         oscillator.type = 'sine';
-                        oscillator.frequency.setValueAtTime(700, currentTime); // Lower
-                        oscillator.frequency.exponentialRampToValueAtTime(1400, currentTime + 0.1); // Lower
+                        oscillator.frequency.setValueAtTime(700, currentTime);
+                        oscillator.frequency.exponentialRampToValueAtTime(1400, currentTime + 0.1);
                         
-                        gainNode.gain.setValueAtTime(0.15 * volume, currentTime); // Reduced from 0.2
+                        gainNode.gain.setValueAtTime(0.12 * volume, currentTime);
                         gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.3);
                         
                         oscillator.start();
                         oscillator.stop(currentTime + 0.3);
+                    },
+                    'reroll': () => {
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(600, currentTime);
+                        oscillator.frequency.linearRampToValueAtTime(300, currentTime + 0.3);
+                        
+                        gainNode.gain.setValueAtTime(0.10 * volume, currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01 * volume, currentTime + 0.4);
+                        
+                        oscillator.start();
+                        oscillator.stop(currentTime + 0.4);
                     }
                 };
                 
@@ -2147,6 +2108,11 @@
                             die2.classList.remove('swapping');
                         }, 1000);
                         
+                        // Provide haptic feedback on supported devices
+                        if (navigator.vibrate) {
+                            navigator.vibrate([15, 15, 15]);
+                        }
+                        
                         // Skip showing the swap confirmation popup
                         console.log("Tiles swapped successfully! Next swap in 8 seconds.");
                         
@@ -2157,14 +2123,6 @@
                 // Store timeouts
                 warningTimeouts[index1] = swapTimeout;
                 warningTimeouts[index2] = swapTimeout;
-            }
-            
-            // Show swap confirmation (now does nothing - popup removed)
-            function showSwapConfirmation() {
-                // Function now does nothing - popup has been removed
-                console.log("Tiles swapped silently - no popup shown");
-                // We still announce to screen readers for accessibility
-                announceToScreenReader("Tiles have been swapped.");
             }
             
             // Start swap timer with exactly 8 second interval
@@ -2185,11 +2143,11 @@
                 console.log("NEW SWAP TIMER STARTED WITH 8-SECOND INTERVAL at " + new Date().toTimeString());
                 console.log("Next swap will occur in exactly 8 seconds");
                 
-                // First swap happens quickly to confirm timer
+                // First swap happens after a delay to confirm timer
                 setTimeout(function() {
                     console.log("PERFORMING INITIAL SWAP");
                     swapAdjacentTiles();
-                }, 1000);
+                }, 3000);
             }
             
             // Instructions drawer
@@ -2209,10 +2167,21 @@
                 }
             });
             
+            // Add touch events for better mobile experience
+            drawerToggle.addEventListener('touchend', function(e) {
+                e.preventDefault(); // Prevent default to avoid delays
+                this.click();
+            });
+            
             drawerHandle.addEventListener('click', () => {
                 instructionsDrawer.classList.remove('open');
                 drawerToggle.setAttribute('aria-expanded', 'false');
                 announceToScreenReader("Instructions panel closed.");
+            });
+            
+            drawerHandle.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                this.click();
             });
             
             // Game control events
@@ -2223,6 +2192,16 @@
             playAgainBtn.addEventListener('click', () => {
                 gameOverModal.style.display = 'none';
                 initGame();
+            });
+            
+            // Add touch events for better mobile response
+            [submitBtn, clearBtn, newGameBtn, rerollBtn, playAgainBtn].forEach(btn => {
+                btn.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    if (!this.disabled) {
+                        this.click();
+                    }
+                });
             });
             
             // Force reset the swap timer to ensure 8-second interval
@@ -2240,12 +2219,37 @@
             // Call this function after page load to ensure correct interval
             setTimeout(forceResetSwapTimer, 2000);
             
+            // Fix for iOS and Android touch device issues - prevent zooming on double-tap
+            document.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            // Allow scrolling only within scrollable elements
+            document.querySelectorAll('.word-list').forEach(el => {
+                el.addEventListener('touchmove', function(e) {
+                    e.stopPropagation();
+                }, { passive: true });
+            });
+            
             // Initialize with a direct update to the instructions text
             window.onload = function() {
                 // Update the instructions text to explicitly mention 8-second swaps
                 const instructionsContent = document.querySelector('.drawer-content');
                 const lastP = instructionsContent.querySelector('p:last-of-type');
                 lastP.innerHTML = "<strong>Challenge:</strong> Every 10 seconds, one random die will change its letter! <strong>Every 8 seconds</strong>, two adjacent tiles will swap positions!";
+                
+                // Check for mobile device and set print letters on by default for small screens
+                if (window.innerWidth < 600 && !showPrintLetters) {
+                    printLettersToggle.checked = true;
+                    printLettersToggle.dispatchEvent(new Event('change'));
+                }
+                
+                // Set up audio context properly for iOS
+                document.addEventListener('touchstart', function() {
+                    if (audioContext.state === 'suspended') {
+                        audioContext.resume();
+                    }
+                }, { once: true });
                 
                 // Force timer reset after a slight delay to ensure DOM is fully loaded
                 setTimeout(function() {
