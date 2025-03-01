@@ -1006,6 +1006,225 @@
             0% { transform: scale(0.9); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* Responsive design - improved version */
+        @media (max-width: 768px) {
+            .app-container {padding: 10px 5px;}
+            h1 {font-size: 1.8rem; margin-bottom: 15px;}
+            
+            /* Improved board layout for tablets */
+            .board {
+                gap: 8px;
+                margin: 0 auto 15px;
+                max-width: 500px;
+            }
+            
+            /* Better sized dice for tablets */
+            .die {
+                width: 55px;
+                height: 55px;
+                border-radius: 8px;
+            }
+            
+            /* Adjusted braille cells for tablets */
+            .braille-cell {
+                width: 32px;
+                height: 48px;
+            }
+            
+            /* More compact game info for vertical stacking */
+            .game-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                border-radius: 15px;
+                padding: 10px;
+                margin-bottom: 15px;
+            }
+            
+            /* Full-width controls for accessibility */
+            .accessibility-controls {
+                flex-direction: column;
+                padding: 12px;
+                gap: 8px;
+            }
+            
+            .toggle-control, .volume-control {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            /* Repositioned help button */
+            .drawer-toggle {
+                bottom: 15px;
+                right: 15px;
+                width: 50px;
+                height: 50px;
+            }
+            
+            /* Better word list display */
+            .word-list {
+                max-height: 180px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            /* Full-width board with proper spacing */
+            .board { 
+                grid-template-columns: repeat(5, 1fr);
+                gap: 5px;
+                max-width: 100%;
+                margin: 0 auto 12px;
+            }
+            
+            /* Fixed-size dice with minimum dimensions */
+            .die { 
+                width: calc(19vw - 12px);
+                height: calc(19vw - 12px);
+                min-width: 42px;
+                min-height: 42px;
+                border-radius: 6px;
+                border-width: 1px;
+            }
+            
+            /* Properly sized braille cells */
+            .braille-cell { 
+                width: calc(11vw);
+                height: calc(14vw);
+                min-width: 28px;
+                min-height: 36px;
+            }
+            
+            /* Smaller braille dots that remain visible */
+            .braille-dot {
+                width: 6px;
+                height: 6px;
+            }
+            
+            /* Adjusted braille dot positions */
+            .braille-dot:nth-child(1) { top: 3px; left: 3px; }
+            .braille-dot:nth-child(2) { top: 14px; left: 3px; }
+            .braille-dot:nth-child(3) { top: 25px; left: 3px; }
+            .braille-dot:nth-child(4) { top: 3px; left: 14px; }
+            .braille-dot:nth-child(5) { top: 14px; left: 14px; }
+            .braille-dot:nth-child(6) { top: 25px; left: 14px; }
+            
+            /* Vertical stacking for word input area */
+            .word-input {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            /* Better sized current word display */
+            #current-word {
+                padding: 10px;
+                font-size: 16px;
+                text-align: center;
+            }
+            
+            /* Full-width buttons with proper sizing */
+            #submit-btn, #clear-btn, #reroll-btn, #new-game-btn { 
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+                margin: 0;
+            }
+            
+            /* Smaller print letters */
+            .print-letter {
+                font-size: 10px;
+                right: 2px;
+                top: 1px;
+                width: 12px;
+                height: 12px;
+                line-height: 12px;
+            }
+            
+            /* Better padded game container */
+            .game-container {
+                padding: 15px 8px;
+                border-radius: 15px;
+            }
+            
+            /* Tighter controls spacing */
+            .controls {gap: 6px;}
+            
+            /* Better modal styling */
+            .modal-content {
+                padding: 15px 12px;
+                width: 95%;
+                border-radius: 15px;
+            }
+            
+            .modal h2 {font-size: 20px;}
+            .modal p {font-size: 14px;}
+            #final-score, #words-found {font-size: 18px;}
+            
+            /* Better sized game info elements */
+            .timer, .score, .rerolls {font-size: 14px;}
+            
+            /* Word list improvements */
+            .word-list {
+                padding: 10px;
+                max-height: 150px;
+            }
+            
+            .word-list h3 {
+                font-size: 16px;
+                margin-bottom: 8px;
+            }
+            
+            .word-list li {
+                padding: 6px 10px;
+                margin-bottom: 4px;
+                font-size: 14px;
+            }
+        }
+
+        /* Very small screens */
+        @media (max-width: 360px) {
+            h1 {font-size: 1.5rem; margin-bottom: 12px;}
+            
+            /* Further optimized dice */
+            .die {
+                width: calc(19vw - 8px);
+                height: calc(19vw - 8px);
+                min-width: 36px;
+                min-height: 36px;
+                border-radius: 5px;
+            }
+            
+            /* Compact braille cell */
+            .braille-cell {
+                width: calc(12vw);
+                height: calc(15vw);
+                min-width: 24px;
+                min-height: 32px;
+            }
+            
+            /* Smallest viable braille dots */
+            .braille-dot {width: 5px; height: 5px;}
+            
+            /* Tightest braille layout that still works */
+            .braille-dot:nth-child(1) { top: 2px; left: 2px; }
+            .braille-dot:nth-child(2) { top: 12px; left: 2px; }
+            .braille-dot:nth-child(3) { top: 22px; left: 2px; }
+            .braille-dot:nth-child(4) { top: 2px; left: 12px; }
+            .braille-dot:nth-child(5) { top: 12px; left: 12px; }
+            .braille-dot:nth-child(6) { top: 22px; left: 12px; }
+            
+            /* Tighter game container */
+            .game-container {padding: 12px 5px;}
+            
+            /* Smaller buttons with less padding */
+            button {padding: 8px 12px; font-size: 13px;}
+            
+            /* Simplified game info */
+            .game-info {
+                padding: 8px 10px;
+                margin-bottom: 10px;
+            }
+        }
     </style>
     <script src="wordref.js"></script>
 </head>
@@ -1418,6 +1637,7 @@
                 // Check if warning state
                 if (dieElement.dataset.warning) {
                     const warningType = dieElement.dataset.warning;
+                    let partnerIndex = null; // Initialize variable outside the if block
                     
                     // Cancel pending change/swap
                     if (warningTimeouts[index]) {
@@ -1427,7 +1647,7 @@
                     
                     // If swap, cancel partner
                     if (warningType === 'swap' && dieElement.dataset.swapPartner) {
-                        const partnerIndex = parseInt(dieElement.dataset.swapPartner);
+                        partnerIndex = parseInt(dieElement.dataset.swapPartner);
                         const partnerElement = document.querySelector(`.die[data-index="${partnerIndex}"]`);
                         
                         if (partnerElement) {
@@ -1456,9 +1676,10 @@
                     
                     playSound('tileSaved');
                     
+                    // Fixed announcement with conditional check for partnerIndex
                     announceToScreenReader(warningType === 'change' 
                         ? `Change prevented for letter at position ${index + 1}.`
-                        : `Swap prevented for letters at positions ${index + 1} and ${partnerIndex + 1}.`);
+                        : `Swap prevented for letters at positions ${index + 1}${partnerIndex !== null ? ` and ${partnerIndex + 1}` : ''}.`);
                     
                     return;
                 }
